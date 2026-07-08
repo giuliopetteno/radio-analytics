@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: ${SPRING_APP_NAME:radio-analytics}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${EXPOSURE_INCLUDE}
+
+  endpoint:
+    health:
+      show-details: ${SHOW_DETAILS}
+
+  metrics:
+    tags:
+      application: ${SPRING_APP_NAME:radio-analytics}
