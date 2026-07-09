@@ -1,55 +1,14 @@
 spring:
-  application:
-    name: ${SPRING_APP_NAME:radio-analytics}
-
   config:
     activate:
       on-profile: prod
 
-  datasource:
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-
   jpa:
-    hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO:none}
-
     properties:
       hibernate:
-        default_schema: ${HIBERNATE_DEFAULT_SCHEMA:radio_analytics}
         format_sql: ${HIBERNATE_FORMAT_SQL:false}
-        default_batch_fetch_size: ${HIBERNATE_DEFAULT_BATCH_FETCH_SIZE:20}
 
     show-sql: ${JPA_SHOW_SQL:false}
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: ${EXPOSURE_INCLUDE}
-
-  endpoint:
-    health:
-      show-details: ${SHOW_DETAILS}
-
-  metrics:
-    tags:
-      application: ${SPRING_APP_NAME:radio-analytics}
-
-logging:
-  pattern:
-    console: ${LOGPATTERN_CONSOLE:%green(%d{HH:mm:ss.SSS}) %blue(%-5level) %red([%thread]) %yellow(%logger{15}) - %msg%n}
-    level:
-      org:
-        springframework:
-          security: ${SPRING_SECURITY_LOG_LEVEL:ERROR}
-
 server:
   port: 8444
-  ssl:
-    enabled: true
-    key-store: "classpath:keystore.p12"
-    key-store-password: "${SSL_KEYSTORE_PASSWORD}"
-    key-store-type: PKCS12
-    key-alias: "radio-analytics"

@@ -1,0 +1,4 @@
+services:
+  radio-analytics:
+    env_file:
+      - .env.prod
