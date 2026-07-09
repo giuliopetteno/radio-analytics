@@ -2,8 +2,9 @@ spring:
   application:
     name: ${SPRING_APP_NAME:radio-analytics}
 
-  profiles:
-    active: ${PROFILE_ACTIVE}
+  config:
+    activate:
+      on-profile: prod
 
   datasource:
     url: ${DB_URL}
@@ -17,10 +18,10 @@ spring:
     properties:
       hibernate:
         default_schema: ${HIBERNATE_DEFAULT_SCHEMA:radio_analytics}
-        format_sql: ${HIBERNATE_FORMAT_SQL:true}
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
         default_batch_fetch_size: ${HIBERNATE_DEFAULT_BATCH_FETCH_SIZE:20}
 
-    show-sql: ${JPA_SHOW_SQL:true}
+    show-sql: ${JPA_SHOW_SQL:false}
 
 management:
   endpoints:
@@ -42,7 +43,13 @@ logging:
     level:
       org:
         springframework:
-          security: ${SPRING_SECURITY_LOG_LEVEL:TRACE}
+          security: ${SPRING_SECURITY_LOG_LEVEL:ERROR}
 
 server:
-  port: 8081
+  port: 8444
+  ssl:
+    enabled: true
+    key-store: "classpath:keystore.p12"
+    key-store-password: "${SSL_KEYSTORE_PASSWORD}"
+    key-store-type: PKCS12
+    key-alias: "radio-analytics"
