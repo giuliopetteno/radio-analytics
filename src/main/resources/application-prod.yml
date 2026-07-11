@@ -9,6 +9,3 @@ spring:
         format_sql: ${HIBERNATE_FORMAT_SQL:false}
 
     show-sql: ${JPA_SHOW_SQL:false}
-
-server:
-  port: 8444
