@@ -3,8 +3,8 @@ services:
     build: .
     image: ${CONTAINER_REGISTRY_REPO}/radio-analytics:latest
     container_name: radio-analytics
-    ports:
-      - "8081:8081"
     restart: unless-stopped
+    networks:
+      - radio-net
     env_file:
       - .env
