@@ -1,3 +1,5 @@
+name: radio-analytics-default
+
 services:
   radio-analytics:
     build: .
