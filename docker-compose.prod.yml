@@ -12,3 +12,4 @@ services:
       - .env.prod
     environment:
       - SPRING_PROFILES_ACTIVE=prod
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:29092
