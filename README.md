@@ -11,7 +11,7 @@ Application and business metrics are exposed via **Prometheus**, and **Grafana**
 > This project is currently under active development and serves as a demonstration of event-driven architecture and data pipeline practices in a modern Java backend context.
 > New features, improvements, and additional integrations will be added over time.
 >
-> ## Planned Enhancements
+## Planned Enhancements
 
 - Apache Kafka Idempotent Consumer for event-driven communication
 - Prometheus metrics exposure for application monitoring
