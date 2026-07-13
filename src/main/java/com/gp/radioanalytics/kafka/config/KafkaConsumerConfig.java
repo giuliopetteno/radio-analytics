@@ -19,19 +19,19 @@ import tools.jackson.core.JacksonException;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value("${kafka.consumer.retry.generic-error-interval}")
+    @Value("${kafka.consumer.retry.generic-error.interval}")
     private long genericErrorInterval;
 
-    @Value("${kafka.consumer.retry.generic-error-max-retries}")
+    @Value("${kafka.consumer.retry.generic-error.max-retries}")
     private long genericErrorMaxRetries;
 
-    @Value("${kafka.consumer.retry.infrastructure-error-initial-interval}")
+    @Value("${kafka.consumer.retry.infrastructure-error.initial-interval}")
     private long infrastructureErrorInitialInterval;
 
-    @Value("${kafka.consumer.retry.infrastructure-error-multiplier}")
+    @Value("${kafka.consumer.retry.infrastructure-error.multiplier}")
     private double infrastructureErrorMultiplier;
 
-    @Value("${kafka.consumer.retry.infrastructure-error-max-interval}")
+    @Value("${kafka.consumer.retry.infrastructure-error.max-interval}")
     private long infrastructureErrorMaxInterval;
 
     @Bean

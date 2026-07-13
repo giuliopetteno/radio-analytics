@@ -57,8 +57,13 @@ server:
 kafka:
   consumer:
     retry:
-      generic-error-interval: 5000
-      generic-error-max-retries: 3
-      infrastructure-error-initial-interval: 5000
-      infrastructure-error-multiplier: 2.0
-      infrastructure-error-max-interval: 300000
+      generic-error:
+        interval: 5000
+        max-retries: 3
+      infrastructure-error:
+        initial-interval: 5000
+        multiplier: 2.0
+        max-interval: 300000
+    dlt:
+      topics: device-events-dlt
+      # for future reference: ,department-events-dlt,organization-events-dlt
