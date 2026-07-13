@@ -31,6 +31,8 @@ CREATE TABLE IF NOT EXISTS device_snapshot(
     department_id BIGINT,
     device_created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     device_updated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    deleted_at TIMESTAMP WITH TIME ZONE,
     last_event_id UUID NOT NULL,
     last_event_type TEXT NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL

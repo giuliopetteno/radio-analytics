@@ -27,11 +27,11 @@ spring:
     consumer:
       group-id: radio-analytics
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       auto-offset-reset: earliest
-      properties:
-        spring.json.trusted.packages: "*"
-        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 management:
   endpoints:
@@ -54,7 +54,11 @@ logging:
 server:
   port: ${SERVER_PORT:8081}
 
-app:
-  kafka:
-    topic:
-      device-events: radio-registry.device.events
+kafka:
+  consumer:
+    retry:
+      generic-error-interval: 5000
+      generic-error-max-retries: 3
+      infrastructure-error-initial-interval: 5000
+      infrastructure-error-multiplier: 2.0
+      infrastructure-error-max-interval: 300000

@@ -10,7 +10,6 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ProcessedEventService {
-
 	private final ProcessedEventRepository processedEventRepository;
 
 	public boolean isProcessed(UUID eventId) {

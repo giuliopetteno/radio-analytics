@@ -54,6 +54,12 @@ public class DeviceSnapshot {
 	@Column(name = "device_updated_at", nullable = false)
 	private OffsetDateTime deviceUpdatedAt;
 
+	@Column(name = "deleted", nullable = false)
+	private boolean deleted = false;
+
+	@Column(name = "deleted_at")
+	private OffsetDateTime deletedAt;
+
 	@Column(name = "last_event_id", nullable = false)
 	private UUID lastEventId;
 
