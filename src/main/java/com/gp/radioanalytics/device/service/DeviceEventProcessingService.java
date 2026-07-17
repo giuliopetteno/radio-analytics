@@ -5,6 +5,7 @@ import com.gp.radioanalytics.device.domain.DeviceSnapshot;
 import com.gp.radioanalytics.device.repository.DeviceEventLogRepository;
 import com.gp.radioanalytics.device.repository.DeviceSnapshotRepository;
 import com.gp.radioanalytics.enums.EntityType;
+import com.gp.radioanalytics.enums.EventType;
 import com.gp.radioanalytics.kafka.event.DeviceEvent;
 import com.gp.radioanalytics.kafka.processedevent.service.ProcessedEventService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class DeviceEventProcessingService {
-
 	private final ProcessedEventService processedEventService;
 	private final DeviceEventLogRepository deviceEventLogRepository;
 	private final DeviceSnapshotRepository deviceSnapshotRepository;
@@ -29,7 +29,13 @@ public class DeviceEventProcessingService {
 		}
 
 		deviceEventLogRepository.save(toEventLog(event));
-		deviceSnapshotRepository.save(toSnapshot(event));
+
+		DeviceSnapshot deviceSnapshot = toSnapshot(event);
+		if (event.eventType() == EventType.DELETE) {
+			deviceSnapshot.setDeleted(true);
+			deviceSnapshot.setDeletedAt(event.producedAt());
+		}
+		deviceSnapshotRepository.save(deviceSnapshot);
 
 		processedEventService.markAsProcessed(event.eventId(), EntityType.DEVICE.name());
 		log.info("Event {} processed successfully", event.eventId());

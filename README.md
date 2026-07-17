@@ -17,4 +17,4 @@ Application and business metrics are exposed via **Prometheus**, and **Grafana**
 - Prometheus metrics exposure for application monitoring
 - Grafana dashboards for data visualization
 - CI/CD pipeline with GitHub Actions
-- Cloud deployment on Oracle Cloud Infrastructure (OCI)
+- Cloud deployment on Amazon Web Services (AWS)
