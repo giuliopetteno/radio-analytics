@@ -1,6 +1,6 @@
-# Medical Equipment Analytics System (Radio Analytics)
+# Medical Devices Analytics System (Radio Analytics)
 
-A Kafka-based analytics microservice that builds and maintains a read-model derived from medical equipment lifecycle events, providing operational and business insights for the Radio ecosystem.
+A Kafka-based analytics microservice that builds and maintains a read-model derived from medical devices lifecycle events, providing operational and business insights for the Radio ecosystem.
 
 The service consumes domain events published by [`radio-registry`](https://github.com/giuliopetteno/radio-registry) and transforms them into an analytical read-model optimized for reporting and monitoring.
 
@@ -14,7 +14,7 @@ Application and business metrics are exposed via **Prometheus**, and **Grafana**
 
 ## Features
 
-- Read-model persistence for medical equipment lifecycle analytics
+- Read-model persistence for medical devices lifecycle analytics
 - Idempotent, event-driven architecture with deduplication and dead-letter handling
 - Exception handling
 - Layered architecture following enterprise development practices
