@@ -1,12 +1,12 @@
-CREATE TABLE IF NOT EXISTS processed_event(
+CREATE TABLE IF NOT EXISTS radio_analytics.processed_event(
     event_id UUID PRIMARY KEY,
     entity_type TEXT NOT NULL,
     processed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX idx_processed_event_entity_type ON processed_event(entity_type);
+CREATE INDEX idx_processed_event_entity_type ON radio_analytics.processed_event(entity_type);
 
-CREATE TABLE IF NOT EXISTS dead_letter_event(
+CREATE TABLE IF NOT EXISTS radio_analytics.dead_letter_event(
      id BIGSERIAL PRIMARY KEY,
      original_topic TEXT NOT NULL,
      payload TEXT NOT NULL,
@@ -17,4 +17,4 @@ CREATE TABLE IF NOT EXISTS dead_letter_event(
      failed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-CREATE INDEX idx_dead_letter_event_original_topic ON dead_letter_event(original_topic, failed_at);
+CREATE INDEX idx_dead_letter_event_original_topic ON radio_analytics.dead_letter_event(original_topic, failed_at);
