@@ -1,6 +1,6 @@
 # Medical Devices Analytics System (Radio Analytics)
 
-A Kafka-based consumer analytics microservice that builds and maintains a read-model derived from medical devices lifecycle events, providing observability alongside operational and business insights for the Radio ecosystem.
+Java microservice consuming Apache Kafka events that builds and maintains a read-model derived from medical devices lifecycle events, providing observability alongside operational and business insights for the Radio ecosystem.
 
 The service consumes domain events published by [`radio-registry`](https://github.com/giuliopetteno/radio-registry) and transforms them into an analytical read-model optimized for reporting and monitoring.
 
