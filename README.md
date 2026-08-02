@@ -42,7 +42,7 @@ Grafana dashboards are available at:
 - Environment-based configuration for default & production profiles
 - Containerization with Docker & Docker Compose
 - Observability stack:
-  - Grafana Alloy as unified OpenTelemetry collector
+  - Alloy as unified OpenTelemetry collector
   - Prometheus for metrics storage
   - Tempo for distributed trace storage
   - Loki for log aggregation
