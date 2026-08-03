@@ -4,20 +4,14 @@ Java microservice consuming **Apache Kafka** events that builds and maintains a 
 
 The service consumes domain events published by [`radio-registry`](https://github.com/giuliopetteno/radio-registry) and transforms them into an analytical read-model optimized for reporting and monitoring.
 
-Application traces, metrics, and logs are exported via **OpenTelemetry** (OTLP) for consumption by the observability stack deployed in [`radio-infra`](https://github.com/giuliopetteno/radio-infra).
+Application traces, metrics, and logs are exported via **OpenTelemetry** (OTLP) for consumption by the observability stack deployed in [`radio-infra`](https://github.com/giuliopetteno/radio-infra), where they are visualized in Grafana dashboards.
+
 The microservice does not expose its own REST API.
 
 > **🚧 Work in Progress**
 >
 > This project is currently under active development and serves as a demonstration of event-driven architecture and data pipeline practices in a modern Java backend context.
 > New features, improvements, and additional integrations will be added over time.
-
-## Live Demo
-
-Grafana dashboards are available at:
-[radio-analytics.giuliopetteno.dev](https://giuliopetteno.s.gy/radio-analytics) *(short link for click tracking)*
-
-> **Note:** Anonymous read-only access — no login required.
 
 ## Features
 
