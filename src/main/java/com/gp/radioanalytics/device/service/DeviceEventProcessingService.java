@@ -67,6 +67,8 @@ public class DeviceEventProcessingService {
 			.name(event.name())
 			.deviceTypeId(event.deviceTypeId())
 			.serialNumber(event.serialNumber())
+			.description(event.description())
+			.installationDate(event.installationDate())
 			.deviceStatus(event.deviceStatus())
 			.decommissionDate(event.decommissionDate())
 			.organizationId(event.organizationId())

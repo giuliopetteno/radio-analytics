@@ -36,6 +36,11 @@ public class DeviceSnapshot {
 	@Column(name = "serial_number", nullable = false)
 	private String serialNumber;
 
+	private String description;
+
+	@Column(name = "installation_date", nullable = false)
+	private LocalDate installationDate;
+
 	@Column(name = "device_status", nullable = false)
 	private String deviceStatus;
 
