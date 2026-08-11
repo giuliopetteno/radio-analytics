@@ -29,6 +29,19 @@ spring:
     listener:
       observation-enabled: true
 
+kafka:
+  consumer:
+    retry:
+      generic-error:
+        interval: 5000
+        max-retries: 3
+      infrastructure-error:
+        initial-interval: 5000
+        multiplier: 2.0
+        max-interval: 300000
+    dlt:
+      topics: organization-events-dlt,department-events-dlt,device-type-events-dlt,device-events-dlt
+
 management:
   endpoints:
     web:
@@ -62,16 +75,3 @@ logging:
 
 server:
   port: ${SERVER_PORT:8081}
-
-kafka:
-  consumer:
-    retry:
-      generic-error:
-        interval: 5000
-        max-retries: 3
-      infrastructure-error:
-        initial-interval: 5000
-        multiplier: 2.0
-        max-interval: 300000
-    dlt:
-      topics: organization-events-dlt,department-events-dlt,device-type-events-dlt,device-events-dlt
