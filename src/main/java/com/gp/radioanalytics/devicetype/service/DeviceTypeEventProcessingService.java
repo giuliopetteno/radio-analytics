@@ -1,9 +1,9 @@
 package com.gp.radioanalytics.devicetype.service;
 
-import com.gp.radioanalytics.devicetype.domain.DeviceTypeEventLog;
-import com.gp.radioanalytics.devicetype.domain.DeviceTypeSnapshot;
-import com.gp.radioanalytics.devicetype.repository.DeviceTypeEventLogRepository;
-import com.gp.radioanalytics.devicetype.repository.DeviceTypeSnapshotRepository;
+import com.gp.radioanalytics.devicetype.eventlog.domain.DeviceTypeEventLog;
+import com.gp.radioanalytics.devicetype.snapshot.domain.DeviceTypeSnapshot;
+import com.gp.radioanalytics.devicetype.eventlog.repository.DeviceTypeEventLogRepository;
+import com.gp.radioanalytics.devicetype.snapshot.repository.DeviceTypeSnapshotRepository;
 import com.gp.radioanalytics.enums.EntityType;
 import com.gp.radioanalytics.enums.EventType;
 import com.gp.radioanalytics.kafka.event.DeviceTypeEvent;

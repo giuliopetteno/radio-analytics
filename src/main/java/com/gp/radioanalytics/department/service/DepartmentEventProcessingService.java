@@ -1,9 +1,9 @@
 package com.gp.radioanalytics.department.service;
 
-import com.gp.radioanalytics.department.domain.DepartmentEventLog;
-import com.gp.radioanalytics.department.domain.DepartmentSnapshot;
-import com.gp.radioanalytics.department.repository.DepartmentEventLogRepository;
-import com.gp.radioanalytics.department.repository.DepartmentSnapshotRepository;
+import com.gp.radioanalytics.department.eventlog.domain.DepartmentEventLog;
+import com.gp.radioanalytics.department.snapshot.domain.DepartmentSnapshot;
+import com.gp.radioanalytics.department.eventlog.repository.DepartmentEventLogRepository;
+import com.gp.radioanalytics.department.snapshot.repository.DepartmentSnapshotRepository;
 import com.gp.radioanalytics.enums.EntityType;
 import com.gp.radioanalytics.enums.EventType;
 import com.gp.radioanalytics.kafka.event.DepartmentEvent;
