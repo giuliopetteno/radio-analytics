@@ -1,7 +1,12 @@
 package com.gp.radioanalytics.device.analytics.dto;
 
 public record DeviceSummary(
-	Long totalDevices,
-	Long activeDevices,
-	Long deletedDevices
+	long totalDevices,
+	long activeDevices,
+	long pendingInstallationDevices,
+	long maintenanceDevices,
+	long outOfServiceDevices,
+	long pendingDecommissioningDevices,
+	long decommissionedDevices,
+	long deletedDevices
 ) {}

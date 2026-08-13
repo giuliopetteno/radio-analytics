@@ -26,7 +26,7 @@ public class AnalyticsController {
 	@GetMapping("/realtime")
 	@Operation(summary = "Real-time analytics", description = "Returns real-time analytics.")
 	public ResponseEntity<AnalyticsResponse> getRealTimeAnalytics() {
-		var analyticsResponse = analyticsRealTimeOrchestrator.computeAnalytics();
+		var analyticsResponse = analyticsRealTimeOrchestrator.getRealTimeAnalytics();
 
 		log.info("Real-time analytics computed with status {}", analyticsResponse.status());
 		return ResponseEntity.ok(analyticsResponse);
@@ -34,8 +34,8 @@ public class AnalyticsController {
 
 	@GetMapping("/report/latest")
 	@Operation(summary = "Latest analytics report", description = "Returns the most recent analytics report.")
-	public ResponseEntity<AnalyticsResponse> getLatestReport() {
-		var analyticsResponse = analyticsReportService.getLatestReport();
+	public ResponseEntity<AnalyticsResponse> getLatestAnalyticsReport() {
+		var analyticsResponse = analyticsReportService.getLatestAnalyticsReport();
 
 		log.info("Latest analytics report returned, generated at {}", analyticsResponse.generatedAt());
 		return ResponseEntity.ok(analyticsResponse);

@@ -1,7 +1,8 @@
 package com.gp.radioanalytics.device.analytics.service;
 
-import com.gp.radioanalytics.device.analytics.dto.DeviceStatusCount;
 import com.gp.radioanalytics.device.analytics.dto.DeviceSummary;
+import com.gp.radioanalytics.device.analytics.dto.DevicesByDepartment;
+import com.gp.radioanalytics.device.analytics.dto.DevicesByType;
 import com.gp.radioanalytics.device.analytics.repository.DeviceAnalyticsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,14 @@ public class DeviceAnalyticsService {
 	private final DeviceAnalyticsRepository deviceAnalyticsRepository;
 
 	public DeviceSummary getDeviceSummary() {
-		return deviceAnalyticsRepository.getSummary();
+		return deviceAnalyticsRepository.getDeviceSummary();
 	}
 
-	public List<DeviceStatusCount> countByStatus() {
-		return deviceAnalyticsRepository.countByStatus();
+	public List<DevicesByType> getDevicesByType() {
+		return deviceAnalyticsRepository.getDevicesByType();
+	}
+
+	public List<DevicesByDepartment> getDevicesByDepartment() {
+		return deviceAnalyticsRepository.getDevicesByDepartment();
 	}
 }

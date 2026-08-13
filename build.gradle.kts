@@ -44,10 +44,25 @@ dependencies {
 	}
 }
 
+tasks.withType<JavaCompile>().configureEach {
+	options.compilerArgs.add("--enable-preview")
+}
+
+tasks.withType<Test>().configureEach {
+	jvmArgs("--enable-preview")
+}
+
+tasks.withType<JavaExec>().configureEach {
+	jvmArgs("--enable-preview")
+}
+
 tasks.test {
 	useJUnitPlatform()
 	environment("PROFILE_ACTIVE", "test")
-	jvmArgs("-javaagent:${mockitoAgent.asPath}", "-Xshare:off")
+	jvmArgs(
+		"-javaagent:${mockitoAgent.asPath}",
+		"-Xshare:off"
+	)
 	filter {
 		excludeTestsMatching("*IntegrationTest")
 	}

@@ -9,7 +9,5 @@ public enum EntityType {
 	DEPARTMENT,
 	DEVICE,
 	DEVICE_TYPE,
-	ORGANIZATION,
-	ROLE,
-	USER
+	ORGANIZATION
 }
