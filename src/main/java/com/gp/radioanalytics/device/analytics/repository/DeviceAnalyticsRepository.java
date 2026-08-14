@@ -11,18 +11,18 @@ import java.util.List;
 
 public interface DeviceAnalyticsRepository extends JpaRepository<DeviceSnapshot, Long> {
 	@Query("""
-        SELECT new com.gp.radioanalytics.device.analytics.dto.DeviceSummary(
-            SUM(CASE WHEN d.deleted = false THEN 1 ELSE 0 END),
-			SUM(CASE WHEN d.deviceStatus = 'ACTIVE' AND d.deleted = false THEN 1 ELSE 0 END),
-			SUM(CASE WHEN d.deviceStatus = 'PENDING_INSTALLATION' AND d.deleted = false THEN 1 ELSE 0 END),
-			SUM(CASE WHEN d.deviceStatus = 'UNDER_MAINTENANCE' AND d.deleted = false THEN 1 ELSE 0 END),
-			SUM(CASE WHEN d.deviceStatus = 'OUT_OF_SERVICE' AND d.deleted = false THEN 1 ELSE 0 END),
-			SUM(CASE WHEN d.deviceStatus = 'PENDING_DECOMMISSIONING' AND d.deleted = false THEN 1 ELSE 0 END),
-			SUM(CASE WHEN d.deviceStatus = 'DECOMMISSIONED' AND d.deleted = false THEN 1 ELSE 0 END),
-            SUM(CASE WHEN d.deleted = true THEN 1 ELSE 0 END)
-        )
-        FROM DeviceSnapshot d
-        """)
+	SELECT new com.gp.radioanalytics.device.analytics.dto.DeviceSummary(
+		SUM(CASE WHEN d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deviceStatus = 'ACTIVE' AND d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deviceStatus = 'PENDING_INSTALLATION' AND d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deviceStatus = 'UNDER_MAINTENANCE' AND d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deviceStatus = 'OUT_OF_SERVICE' AND d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deviceStatus = 'PENDING_DECOMMISSIONING' AND d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deviceStatus = 'DECOMMISSIONED' AND d.deleted = false THEN 1 ELSE 0 END),
+		SUM(CASE WHEN d.deleted = true THEN 1 ELSE 0 END)
+	)
+	FROM DeviceSnapshot d
+	""")
 	DeviceSummary getDeviceSummary();
 
 	@Query("""
