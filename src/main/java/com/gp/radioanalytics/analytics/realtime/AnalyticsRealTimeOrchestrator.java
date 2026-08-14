@@ -6,6 +6,7 @@ import com.gp.radioanalytics.analytics.enums.AnalyticsRequirement;
 import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
 import com.gp.radioanalytics.analytics.enums.AnalyticsTaskStatus;
 import com.gp.radioanalytics.analytics.exception.AnalyticsExecutionException;
+import com.gp.radioanalytics.department.analytics.service.DepartmentAnalyticsService;
 import com.gp.radioanalytics.device.analytics.service.DeviceAnalyticsService;
 import com.gp.radioanalytics.devicetype.analytics.service.DeviceTypeAnalyticsService;
 import lombok.RequiredArgsConstructor;
@@ -26,47 +27,46 @@ import java.util.concurrent.StructuredTaskScope.Subtask;
 public class AnalyticsRealTimeOrchestrator {
 	private final DeviceAnalyticsService deviceAnalyticsService;
 	private final DeviceTypeAnalyticsService deviceTypeAnalyticsService;
+	private final DepartmentAnalyticsService departmentAnalyticsService;
 
 	@Value("${analytics.realtime.deadline.seconds}")
 	private int deadlineInSeconds;
 
 	public AnalyticsResponse getRealTimeAnalytics() {
-		try (var scope = StructuredTaskScope.open(Joiner.<Object>awaitAll(),
+		try (var scope = StructuredTaskScope.open(Joiner.allUntil(_ -> false),
 										config -> config.withTimeout(Duration.ofSeconds(deadlineInSeconds)))) {
 			var deviceSummaryTask = scope.fork(deviceAnalyticsService::getDeviceSummary);
 			var devicesByTypeTask = scope.fork(deviceAnalyticsService::getDevicesByType);
 			var devicesByDepartmentTask = scope.fork(deviceAnalyticsService::getDevicesByDepartment);
 			var deviceTypeSummaryTask = scope.fork(deviceTypeAnalyticsService::getDeviceTypeSummary);
+			var departmentSummaryTask = scope.fork(departmentAnalyticsService::getDepartmentSummary);
 
-			boolean deadlineExpired = false;
-			try {
-				scope.join();
-			} catch (StructuredTaskScope.TimeoutException e) {
-				deadlineExpired = true;
-			}
+			scope.join();
 
-			var deviceSummary = toResult(deviceSummaryTask, AnalyticsRequirement.MANDATORY, deadlineExpired);
-			var devicesByType = toResult(devicesByTypeTask, AnalyticsRequirement.MANDATORY, deadlineExpired);
-			var devicesByDepartment = toResult(devicesByDepartmentTask, AnalyticsRequirement.MANDATORY, deadlineExpired);
-			var deviceTypeSummary = toResult(deviceTypeSummaryTask, AnalyticsRequirement.OPTIONAL, deadlineExpired);
+			var deviceSummary = toAnalyticsTaskResult(deviceSummaryTask, AnalyticsRequirement.MANDATORY);
+			var devicesByType = toAnalyticsTaskResult(devicesByTypeTask, AnalyticsRequirement.MANDATORY);
+			var devicesByDepartment = toAnalyticsTaskResult(devicesByDepartmentTask, AnalyticsRequirement.MANDATORY);
+			var deviceTypeSummary = toAnalyticsTaskResult(deviceTypeSummaryTask, AnalyticsRequirement.OPTIONAL);
+			var departmentSummary = toAnalyticsTaskResult(departmentSummaryTask, AnalyticsRequirement.OPTIONAL);
 
 			var taskList= List.of(
 				deviceSummary,
 				devicesByType,
 				devicesByDepartment,
-				deviceTypeSummary
+				deviceTypeSummary,
+				departmentSummary
 			);
 
-			var analyticsStatus = deriveAnalyticsStatus(taskList);
+			var analyticsStatus = getAnalyticsStatus(taskList);
 
-			return new AnalyticsResponse(deviceSummary, devicesByType, devicesByDepartment, deviceTypeSummary, analyticsStatus, Instant.now());
+			return new AnalyticsResponse(deviceSummary, devicesByType, devicesByDepartment, deviceTypeSummary, departmentSummary, analyticsStatus, Instant.now());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new AnalyticsExecutionException("Analytics execution was interrupted", e);
 		}
 	}
 
-	private <T> AnalyticsTaskResult<T> toResult(Subtask<T> task, AnalyticsRequirement requirement, boolean deadlineExpired) {
+	private <T> AnalyticsTaskResult<T> toAnalyticsTaskResult(Subtask<T> task, AnalyticsRequirement requirement) {
 		return switch (task.state()) {
 			case SUCCESS ->
 				new AnalyticsTaskResult<>(
@@ -83,13 +83,13 @@ public class AnalyticsRealTimeOrchestrator {
 			case UNAVAILABLE ->
 				new AnalyticsTaskResult<>(
 					null,
-					deadlineExpired ? AnalyticsTaskStatus.TIMEOUT : AnalyticsTaskStatus.CANCELLED,
+					AnalyticsTaskStatus.TIMEOUT,
 					requirement
 				);
 		};
 	}
 
-	private AnalyticsStatus deriveAnalyticsStatus(List<AnalyticsTaskResult<?>> results) {
+	private AnalyticsStatus getAnalyticsStatus(List<AnalyticsTaskResult<?>> results) {
 		boolean mandatoryFailed = results.stream()
 			.anyMatch(result ->
 				result.requirement() == AnalyticsRequirement.MANDATORY

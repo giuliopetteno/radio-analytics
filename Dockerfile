@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM gradle:9.5-jdk25 AS build
+FROM --platform=$BUILDPLATFORM gradle:9.5-jdk26 AS build
 WORKDIR /app
 
 COPY build.gradle.kts settings.gradle.kts gradle.properties* ./
@@ -11,7 +11,7 @@ RUN ./gradlew dependencies --no-daemon || return 0
 COPY src ./src
 RUN ./gradlew bootJar --no-daemon -x test
 
-FROM --platform=$TARGETPLATFORM eclipse-temurin:25-jre-alpine AS runtime
+FROM --platform=$TARGETPLATFORM eclipse-temurin:26-jre-alpine AS runtime
 WORKDIR /app
 
 RUN addgroup -S radio-analytics-group && adduser -S radio-analytics-user -G radio-analytics-group

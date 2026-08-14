@@ -11,6 +11,7 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class AnalyticsReportService {
 	public AnalyticsResponse getLatestAnalyticsReport() {
-		return new AnalyticsResponse(null, null, null, null, AnalyticsStatus.COMPLETED, Instant.now());
+		return new AnalyticsResponse(null, null, null,
+			null, null, AnalyticsStatus.COMPLETED, Instant.now());
 	}
 }

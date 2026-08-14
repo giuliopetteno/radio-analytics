@@ -26,7 +26,7 @@ The microservice does not expose its own REST API.
 
 ## Technology Stack
 
-- Java 25
+- Java 26
 - Spring Boot 4
 - Spring Boot Actuator for health, info & metrics endpoints, enabling production monitoring
 - Hibernate / JPA
