@@ -12,6 +12,8 @@ import java.time.Instant;
 public class AnalyticsReportService {
 	public AnalyticsResponse getLatestAnalyticsReport() {
 		return new AnalyticsResponse(null, null, null,
-			null, null, AnalyticsStatus.COMPLETED, Instant.now());
+			null, null, null, null, null,
+			null, null, null, null, null,
+			null, AnalyticsStatus.COMPLETED, Instant.now());
 	}
 }
