@@ -21,7 +21,7 @@ public interface DepartmentAnalyticsRepository extends JpaRepository<DepartmentS
 		SUM(CASE WHEN depts.deleted = true THEN 1 ELSE 0 END)
 	)
 	FROM DepartmentSnapshot depts
-    """)
+	""")
 	Summary getDepartmentSummary();
 
 	@Query("""
