@@ -81,7 +81,7 @@ analytics:
     deadline:
       minutes: ${ANALYTICS_REPORT_DEADLINE_MINUTES:120}
     job:
-      cron: ${ANALYTICS_REPORT_CRON:0 0 1 * * *}
+      cron: ${ANALYTICS_REPORT_JOB_CRON:0 0 1 * * *}
 
 server:
   port: ${SERVER_PORT:8081}
