@@ -4,4 +4,8 @@ public class AnalyticsExecutionException extends RuntimeException {
 	public AnalyticsExecutionException(String message, Throwable cause) {
 		super(message, cause);
 	}
+
+	public AnalyticsExecutionException(String message) {
+		super(message);
+	}
 }

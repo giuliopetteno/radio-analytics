@@ -1,15 +1,10 @@
 package com.gp.radioanalytics.analytics.realtime;
 
 import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
-import com.gp.radioanalytics.analytics.dto.AnalyticsTaskResult;
-import com.gp.radioanalytics.analytics.enums.AnalyticsRequirement;
-import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
-import com.gp.radioanalytics.analytics.enums.AnalyticsTaskStatus;
+import com.gp.radioanalytics.analytics.dto.SubTasks;
+import com.gp.radioanalytics.analytics.engine.AnalyticsEngine;
+import com.gp.radioanalytics.analytics.enums.AnalyticsExecutionMode;
 import com.gp.radioanalytics.analytics.exception.AnalyticsExecutionException;
-import com.gp.radioanalytics.department.analytics.service.DepartmentAnalyticsService;
-import com.gp.radioanalytics.device.analytics.service.DeviceAnalyticsService;
-import com.gp.radioanalytics.devicetype.analytics.service.DeviceTypeAnalyticsService;
-import com.gp.radioanalytics.organization.analytics.service.OrganizationAnalyticsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,19 +12,14 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
 import java.util.concurrent.StructuredTaskScope;
 import java.util.concurrent.StructuredTaskScope.Joiner;
-import java.util.concurrent.StructuredTaskScope.Subtask;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AnalyticsRealTimeOrchestrator {
-	private final DeviceAnalyticsService deviceAnalyticsService;
-	private final DeviceTypeAnalyticsService deviceTypeAnalyticsService;
-	private final DepartmentAnalyticsService departmentAnalyticsService;
-	private final OrganizationAnalyticsService organizationAnalyticsService;
+	private final AnalyticsEngine analyticsEngine;
 
 	@Value("${analytics.realtime.deadline.seconds}")
 	private int deadlineInSeconds;
@@ -37,110 +27,17 @@ public class AnalyticsRealTimeOrchestrator {
 	public AnalyticsResponse getRealTimeAnalytics() {
 		try (var scope = StructuredTaskScope.open(Joiner.allUntil(_ -> false),
 										config -> config.withTimeout(Duration.ofSeconds(deadlineInSeconds)))) {
-			var deviceSummaryTask = scope.fork(deviceAnalyticsService::getDeviceSummary);
-			var devicesByOrganizationTask = scope.fork(deviceAnalyticsService::getDevicesByOrganization);
-			var devicesByDepartmentTask = scope.fork(deviceAnalyticsService::getDevicesByDepartment);
-			var devicesByTypeTask = scope.fork(deviceAnalyticsService::getDevicesByType);
-			var devicesInstallationTrendTask = scope.fork(deviceAnalyticsService::getDevicesInstallationTrend);
-			var averageDeviceAgeTask = scope.fork(deviceAnalyticsService::getAverageDeviceAge);
-			var organizationSummaryTask = scope.fork(organizationAnalyticsService::getOrganizationSummary);
-			var departmentSummaryTask = scope.fork(departmentAnalyticsService::getDepartmentSummary);
-			var deviceTypeSummaryTask = scope.fork(deviceTypeAnalyticsService::getDeviceTypeSummary);
-			var devicesDecommissioningTrendTask = scope.fork(deviceAnalyticsService::getDevicesDecommissioningTrend);
-			var deviceEventsTrendTask = scope.fork(deviceAnalyticsService::getDeviceEventsTrend);
-			var organizationEventsTrendTask = scope.fork(organizationAnalyticsService::getOrganizationEventsTrend);
-			var departmentEventsTrendTask = scope.fork(departmentAnalyticsService::getDepartmentEventsTrend);
-			var deviceTypeEventsTrendTask = scope.fork(deviceTypeAnalyticsService::getDeviceTypeEventsTrend);
+			SubTasks subTasks = analyticsEngine.forkAll(scope);
 
 			scope.join();
 
-			var deviceSummary = toAnalyticsTaskResult(deviceSummaryTask, AnalyticsRequirement.MANDATORY);
-			var devicesByOrganization = toAnalyticsTaskResult(devicesByOrganizationTask, AnalyticsRequirement.MANDATORY);
-			var devicesByDepartment = toAnalyticsTaskResult(devicesByDepartmentTask, AnalyticsRequirement.MANDATORY);
-			var devicesByType = toAnalyticsTaskResult(devicesByTypeTask, AnalyticsRequirement.MANDATORY);
-			var devicesInstallationTrend = toAnalyticsTaskResult(devicesInstallationTrendTask, AnalyticsRequirement.MANDATORY);
-			var averageDeviceAge = toAnalyticsTaskResult(averageDeviceAgeTask, AnalyticsRequirement.MANDATORY);
-			var organizationSummary = toAnalyticsTaskResult(organizationSummaryTask, AnalyticsRequirement.OPTIONAL);
-			var departmentSummary = toAnalyticsTaskResult(departmentSummaryTask, AnalyticsRequirement.OPTIONAL);
-			var deviceTypeSummary = toAnalyticsTaskResult(deviceTypeSummaryTask, AnalyticsRequirement.OPTIONAL);
-			var devicesDecommissioningTrend = toAnalyticsTaskResult(devicesDecommissioningTrendTask, AnalyticsRequirement.OPTIONAL);
-			var deviceEventsTrend = toAnalyticsTaskResult(deviceEventsTrendTask, AnalyticsRequirement.OPTIONAL);
-			var organizationEventsTrend = toAnalyticsTaskResult(organizationEventsTrendTask, AnalyticsRequirement.OPTIONAL);
-			var departmentEventsTrend = toAnalyticsTaskResult(departmentEventsTrendTask, AnalyticsRequirement.OPTIONAL);
-			var deviceTypeEventsTrend = toAnalyticsTaskResult(deviceTypeEventsTrendTask, AnalyticsRequirement.OPTIONAL);
+			var taskResults= analyticsEngine.getTaskResults(subTasks);
+			var analyticsStatus = analyticsEngine.getAnalyticsStatus(taskResults, AnalyticsExecutionMode.REALTIME);
 
-			var taskList= List.of(
-				deviceSummary,
-				devicesByOrganization,
-				devicesByDepartment,
-				devicesByType,
-				devicesInstallationTrend,
-				averageDeviceAge,
-				organizationSummary,
-				departmentSummary,
-				deviceTypeSummary,
-				devicesDecommissioningTrend,
-				deviceEventsTrend,
-				organizationEventsTrend,
-				departmentEventsTrend,
-				deviceTypeEventsTrend
-			);
-
-			var analyticsStatus = getAnalyticsStatus(taskList);
-
-			return new AnalyticsResponse(deviceSummary, devicesByOrganization, devicesByDepartment, devicesByType, devicesInstallationTrend, averageDeviceAge,
-				organizationSummary, departmentSummary, deviceTypeSummary, devicesDecommissioningTrend, deviceEventsTrend, organizationEventsTrend,
-				departmentEventsTrend, deviceTypeEventsTrend, analyticsStatus, Instant.now());
+			return new AnalyticsResponse(taskResults, analyticsStatus, Instant.now());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new AnalyticsExecutionException("Analytics execution was interrupted", e);
 		}
-	}
-
-	private <T> AnalyticsTaskResult<T> toAnalyticsTaskResult(Subtask<T> task, AnalyticsRequirement requirement) {
-		return switch (task.state()) {
-			case SUCCESS ->
-				new AnalyticsTaskResult<>(
-					task.get(),
-					AnalyticsTaskStatus.SUCCESS,
-					requirement
-				);
-			case FAILED ->
-				new AnalyticsTaskResult<>(
-					null,
-					AnalyticsTaskStatus.FAILED,
-					requirement
-				);
-			case UNAVAILABLE ->
-				new AnalyticsTaskResult<>(
-					null,
-					AnalyticsTaskStatus.TIMEOUT,
-					requirement
-				);
-		};
-	}
-
-	private AnalyticsStatus getAnalyticsStatus(List<AnalyticsTaskResult<?>> results) {
-		boolean mandatoryFailed = results.stream()
-			.anyMatch(result ->
-				result.requirement() == AnalyticsRequirement.MANDATORY
-					&& result.status() != AnalyticsTaskStatus.SUCCESS
-			);
-
-		if (mandatoryFailed) {
-			return AnalyticsStatus.FAILED;
-		}
-
-		boolean optionalFailed = results.stream()
-			.anyMatch(result ->
-				result.requirement() == AnalyticsRequirement.OPTIONAL
-					&& result.status() != AnalyticsTaskStatus.SUCCESS
-			);
-
-		if (optionalFailed) {
-			return AnalyticsStatus.PARTIAL;
-		}
-
-		return AnalyticsStatus.COMPLETED;
 	}
 }

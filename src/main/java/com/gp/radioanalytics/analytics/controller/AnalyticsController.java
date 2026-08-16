@@ -2,7 +2,7 @@ package com.gp.radioanalytics.analytics.controller;
 
 import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
 import com.gp.radioanalytics.analytics.realtime.AnalyticsRealTimeOrchestrator;
-import com.gp.radioanalytics.analytics.report.service.AnalyticsReportService;
+import com.gp.radioanalytics.analytics.report.analyticsreport.service.AnalyticsReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -18,17 +18,17 @@ import static com.gp.radioanalytics.constant.ApiConstants.ANALYTICS_PATH;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(ANALYTICS_PATH)
-@Tag(name = "Analytics controller", description = "API for real-time and precomputed analytics")
+@Tag(name = "Analytics controller", description = "API for realtime and scheduled analytics")
 public class AnalyticsController {
 	private final AnalyticsRealTimeOrchestrator analyticsRealTimeOrchestrator;
 	private final AnalyticsReportService analyticsReportService;
 
 	@GetMapping("/realtime")
-	@Operation(summary = "Real-time analytics", description = "Returns real-time analytics.")
+	@Operation(summary = "Realtime analytics", description = "Returns realtime analytics.")
 	public ResponseEntity<AnalyticsResponse> getRealTimeAnalytics() {
 		var analyticsResponse = analyticsRealTimeOrchestrator.getRealTimeAnalytics();
 
-		log.info("Real-time analytics computed with status {}", analyticsResponse.status());
+		log.info("Realtime analytics generated with status {} at {}", analyticsResponse.status(), analyticsResponse.generatedAt());
 		return ResponseEntity.ok(analyticsResponse);
 	}
 
@@ -37,7 +37,7 @@ public class AnalyticsController {
 	public ResponseEntity<AnalyticsResponse> getLatestAnalyticsReport() {
 		var analyticsResponse = analyticsReportService.getLatestAnalyticsReport();
 
-		log.info("Latest analytics report returned, generated at {}", analyticsResponse.generatedAt());
+		log.info("Latest analytics report returned with status {} at {}", analyticsResponse.status(), analyticsResponse.generatedAt());
 		return ResponseEntity.ok(analyticsResponse);
 	}
 }
