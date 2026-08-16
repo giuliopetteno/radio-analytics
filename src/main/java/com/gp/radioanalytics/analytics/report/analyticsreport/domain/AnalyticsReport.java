@@ -1,7 +1,5 @@
 package com.gp.radioanalytics.analytics.report.analyticsreport.domain;
 
-package com.gp.radioanalytics.analytics.report.domain;
-
 import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
