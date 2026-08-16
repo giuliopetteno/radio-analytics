@@ -8,7 +8,7 @@ Analytics are available both in real-time and through scheduled, persisted repor
 
 Application traces, metrics, and logs are exported via **OpenTelemetry** (OTLP) for consumption by the observability stack deployed in [`radio-infra`](https://github.com/giuliopetteno/radio-infra), where they are visualized in Grafana dashboards.
 
-The microservice exposes internal REST endpoints for analytics consumption, accessible only within the Docker network and not exposed externally.
+The microservice exposes REST endpoints for analytics consumption, accessible only within the Docker network in production, while exposed externally in local and production-like environments for development and testing.
 
 > **🚧 Work in Progress**
 >
