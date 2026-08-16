@@ -3,9 +3,9 @@ package com.gp.radioanalytics.analytics.report.analyticsreport.service;
 import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
 import com.gp.radioanalytics.analytics.dto.TaskResults;
 import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
-import com.gp.radioanalytics.analytics.exception.AnalyticsExecutionException;
 import com.gp.radioanalytics.analytics.report.analyticsreport.domain.AnalyticsReport;
 import com.gp.radioanalytics.analytics.report.analyticsreport.repository.AnalyticsReportRepository;
+import com.gp.radioanalytics.analytics.report.exception.ReportNotAvailableException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,7 @@ public class AnalyticsReportService {
 
 	public AnalyticsResponse getLatestAnalyticsReport() {
 		var report = analyticsReportRepository.findFirstByOrderByGeneratedAtDesc()
-			.orElseThrow(() -> new AnalyticsExecutionException("No analytics report available yet"));
+			.orElseThrow(() -> new ReportNotAvailableException("No analytics report available"));
 
 		var taskResults = jsonMapper.readValue(report.getReport(), TaskResults.class);
 
