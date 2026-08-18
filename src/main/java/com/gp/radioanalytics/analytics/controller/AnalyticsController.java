@@ -1,7 +1,7 @@
 package com.gp.radioanalytics.analytics.controller;
 
 import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
-import com.gp.radioanalytics.analytics.realtime.AnalyticsRealTimeOrchestrator;
+import com.gp.radioanalytics.analytics.realtime.AnalyticsRealTime;
 import com.gp.radioanalytics.analytics.report.analyticsreport.service.AnalyticsReportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,13 +20,13 @@ import static com.gp.radioanalytics.constant.ApiConstants.ANALYTICS_PATH;
 @RequestMapping(ANALYTICS_PATH)
 @Tag(name = "Analytics controller", description = "API for realtime and scheduled analytics")
 public class AnalyticsController {
-	private final AnalyticsRealTimeOrchestrator analyticsRealTimeOrchestrator;
+	private final AnalyticsRealTime analyticsRealTime;
 	private final AnalyticsReportService analyticsReportService;
 
 	@GetMapping("/realtime")
 	@Operation(summary = "Realtime analytics", description = "Returns realtime analytics.")
 	public ResponseEntity<AnalyticsResponse> getRealTimeAnalytics() {
-		var analyticsResponse = analyticsRealTimeOrchestrator.getRealTimeAnalytics();
+		var analyticsResponse = analyticsRealTime.getRealTimeAnalytics();
 
 		log.info("Realtime analytics generated with status {} at {}", analyticsResponse.status(), analyticsResponse.generatedAt());
 		return ResponseEntity.ok(analyticsResponse);

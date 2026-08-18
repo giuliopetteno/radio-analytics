@@ -1,6 +1,5 @@
 package com.gp.radioanalytics.analytics.report;
 
-import com.gp.radioanalytics.analytics.dto.SubTasks;
 import com.gp.radioanalytics.analytics.engine.AnalyticsEngine;
 import com.gp.radioanalytics.analytics.enums.AnalyticsExecutionMode;
 import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
@@ -12,13 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.concurrent.StructuredTaskScope;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AnalyticsReportOrchestrator {
+public class AnalyticsReport {
 	private final AnalyticsEngine analyticsEngine;
 	private final AnalyticsReportService analyticsReportService;
 
@@ -28,18 +26,15 @@ public class AnalyticsReportOrchestrator {
 	public void generateAnalyticsReport() {
 		try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.allUntil(_ -> false),
 			config -> config.withTimeout(Duration.ofMinutes(deadlineInMinutes)))) {
-			SubTasks subTasks = analyticsEngine.forkAll(scope);
+			var analyticsExecutionResult = analyticsEngine.executeAnalytics(scope, AnalyticsExecutionMode.REPORT);
 
-			scope.join();
-
-			var taskResults= analyticsEngine.getTaskResults(subTasks);
-			var analyticsStatus = analyticsEngine.getAnalyticsStatus(taskResults, AnalyticsExecutionMode.REPORT);
-
-			if (analyticsStatus == AnalyticsStatus.FAILED) {
+			if (analyticsExecutionResult.analyticsStatus() == AnalyticsStatus.FAILED) {
 				log.error("Report generation failed, some KPIs unavailable — skipping persistence");
 				return;
 			}
-			analyticsReportService.saveReport(taskResults, analyticsStatus, Instant.now());
+
+			analyticsReportService.saveReport(analyticsExecutionResult.taskResults(), analyticsExecutionResult.analyticsStatus(),
+				analyticsExecutionResult.generatedAt());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new AnalyticsExecutionException("Analytics execution was interrupted", e);

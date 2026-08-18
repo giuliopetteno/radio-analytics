@@ -1,6 +1,6 @@
-package com.gp.radioanalytics.constant;
+package com.gp.radioanalytics.kafka.constants;
 
-public class KafkaConstants {
+public final class KafkaConstants {
     private KafkaConstants() {}
 
     public static final String TOPIC_SUFFIX = "-events";

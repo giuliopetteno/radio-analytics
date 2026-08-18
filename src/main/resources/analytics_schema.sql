@@ -1,5 +1,4 @@
 CREATE TYPE radio_analytics.analytics_status AS ENUM(
-    'RUNNING',
     'COMPLETED',
     'PARTIAL',
     'FAILED'

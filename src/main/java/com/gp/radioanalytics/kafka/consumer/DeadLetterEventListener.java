@@ -10,7 +10,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import static com.gp.radioanalytics.constant.KafkaConstants.DLT_SUFFIX;
+import static com.gp.radioanalytics.kafka.constants.KafkaConstants.DLT_SUFFIX;
 
 @Slf4j
 @Component

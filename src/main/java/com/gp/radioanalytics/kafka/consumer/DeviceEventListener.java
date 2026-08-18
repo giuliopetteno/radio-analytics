@@ -8,7 +8,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import tools.jackson.databind.json.JsonMapper;
 
-import static com.gp.radioanalytics.constant.KafkaConstants.TOPIC_SUFFIX;
+import static com.gp.radioanalytics.kafka.constants.KafkaConstants.TOPIC_SUFFIX;
 
 @Slf4j
 @Component

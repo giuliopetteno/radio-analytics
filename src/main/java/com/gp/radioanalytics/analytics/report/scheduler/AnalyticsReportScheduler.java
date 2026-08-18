@@ -1,6 +1,6 @@
 package com.gp.radioanalytics.analytics.report.scheduler;
 
-import com.gp.radioanalytics.analytics.report.AnalyticsReportOrchestrator;
+import com.gp.radioanalytics.analytics.report.AnalyticsReport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -10,14 +10,11 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class AnalyticsReportScheduler {
-	private final AnalyticsReportOrchestrator analyticsReportOrchestrator;
+	private final AnalyticsReport analyticsReport;
 
 	@Scheduled(cron = "${analytics.report.job.cron}")
 	public void analyticsReportJob() {
-		log.info("Starting analytics report job");
-
-		analyticsReportOrchestrator.generateAnalyticsReport();
-
-		log.info("Analytics report job finished");
+		log.info("Analytics report job started");
+		analyticsReport.generateAnalyticsReport();
 	}
 }
