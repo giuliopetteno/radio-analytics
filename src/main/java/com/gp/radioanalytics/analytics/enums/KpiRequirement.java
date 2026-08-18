@@ -1,6 +1,6 @@
 package com.gp.radioanalytics.analytics.enums;
 
-public enum AnalyticsRequirement {
+public enum KpiRequirement {
 	MANDATORY,
 	OPTIONAL
 }

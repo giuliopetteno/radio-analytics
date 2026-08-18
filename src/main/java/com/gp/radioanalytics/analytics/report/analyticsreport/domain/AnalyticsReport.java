@@ -1,6 +1,6 @@
 package com.gp.radioanalytics.analytics.report.analyticsreport.domain;
 
-import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
+import com.gp.radioanalytics.analytics.enums.ExecutionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -39,7 +39,7 @@ public class AnalyticsReport {
 	@Enumerated(EnumType.STRING)
 	@JdbcTypeCode(SqlTypes.NAMED_ENUM)
 	@Column(name = "report_status", nullable = false)
-	private AnalyticsStatus reportStatus;
+	private ExecutionStatus reportExecutionStatus;
 
 	@Column(name = "generated_at", nullable = false)
 	private OffsetDateTime generatedAt;

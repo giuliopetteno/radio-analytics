@@ -1,6 +1,6 @@
 package com.gp.radioanalytics.analytics.enums;
 
-public enum AnalyticsTaskStatus {
+public enum KpiStatus {
 	SUCCESS,
 	FAILED,
 	TIMEOUT

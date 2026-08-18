@@ -1,8 +1,8 @@
 package com.gp.radioanalytics.analytics.report;
 
 import com.gp.radioanalytics.analytics.engine.AnalyticsEngine;
-import com.gp.radioanalytics.analytics.enums.AnalyticsExecutionMode;
-import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
+import com.gp.radioanalytics.analytics.enums.ExecutionMode;
+import com.gp.radioanalytics.analytics.enums.ExecutionStatus;
 import com.gp.radioanalytics.analytics.exception.AnalyticsExecutionException;
 import com.gp.radioanalytics.analytics.report.analyticsreport.service.AnalyticsReportService;
 import lombok.RequiredArgsConstructor;
@@ -26,15 +26,14 @@ public class AnalyticsReport {
 	public void generateAnalyticsReport() {
 		try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.allUntil(_ -> false),
 			config -> config.withTimeout(Duration.ofMinutes(deadlineInMinutes)))) {
-			var analyticsExecutionResult = analyticsEngine.executeAnalytics(AnalyticsExecutionMode.REPORT, scope);
+			var executionResult = analyticsEngine.executeAnalytics(ExecutionMode.REPORT, scope);
 
-			if (analyticsExecutionResult.analyticsStatus() == AnalyticsStatus.FAILED) {
+			if (executionResult.executionStatus() == ExecutionStatus.FAILED) {
 				log.error("Report generation failed, some KPIs unavailable — skipping persistence");
 				return;
 			}
 
-			analyticsReportService.saveReport(analyticsExecutionResult.taskResults(), analyticsExecutionResult.analyticsStatus(),
-				analyticsExecutionResult.generatedAt());
+			analyticsReportService.saveReport(executionResult.kpiResults(), executionResult.executionStatus(), executionResult.generatedAt());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new AnalyticsExecutionException("Analytics execution was interrupted", e);

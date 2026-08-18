@@ -1,6 +1,6 @@
 package com.gp.radioanalytics.analytics.controller;
 
-import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
+import com.gp.radioanalytics.analytics.dto.Response;
 import com.gp.radioanalytics.analytics.realtime.AnalyticsRealTime;
 import com.gp.radioanalytics.analytics.report.analyticsreport.service.AnalyticsReportService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,19 +25,19 @@ public class AnalyticsController {
 
 	@GetMapping("/realtime")
 	@Operation(summary = "Realtime analytics", description = "Returns realtime analytics.")
-	public ResponseEntity<AnalyticsResponse> getRealTimeAnalytics() {
-		var analyticsResponse = analyticsRealTime.getRealTimeAnalytics();
+	public ResponseEntity<Response> getRealTimeAnalytics() {
+		var response = analyticsRealTime.getRealTimeAnalytics();
 
-		log.info("Realtime analytics generated with status {} at {}", analyticsResponse.status(), analyticsResponse.generatedAt());
-		return ResponseEntity.ok(analyticsResponse);
+		log.info("Realtime analytics generated with status {} at {}", response.executionStatus(), response.generatedAt());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/report/latest")
 	@Operation(summary = "Latest analytics report", description = "Returns the most recent analytics report.")
-	public ResponseEntity<AnalyticsResponse> getLatestAnalyticsReport() {
-		var analyticsResponse = analyticsReportService.getLatestAnalyticsReport();
+	public ResponseEntity<Response> getLatestAnalyticsReport() {
+		var response = analyticsReportService.getLatestAnalyticsReport();
 
-		log.info("Latest analytics report returned with status {} at {}", analyticsResponse.status(), analyticsResponse.generatedAt());
-		return ResponseEntity.ok(analyticsResponse);
+		log.info("Latest analytics report returned with status {} at {}", response.executionStatus(), response.generatedAt());
+		return ResponseEntity.ok(response);
 	}
 }

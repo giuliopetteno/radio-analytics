@@ -1,10 +1,10 @@
 package com.gp.radioanalytics.analytics.engine;
 
 import com.gp.radioanalytics.analytics.dto.*;
-import com.gp.radioanalytics.analytics.enums.AnalyticsExecutionMode;
-import com.gp.radioanalytics.analytics.enums.AnalyticsRequirement;
-import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
-import com.gp.radioanalytics.analytics.enums.AnalyticsTaskStatus;
+import com.gp.radioanalytics.analytics.enums.ExecutionMode;
+import com.gp.radioanalytics.analytics.enums.KpiRequirement;
+import com.gp.radioanalytics.analytics.enums.ExecutionStatus;
+import com.gp.radioanalytics.analytics.enums.KpiStatus;
 import com.gp.radioanalytics.analytics.metrics.AnalyticsMetrics;
 import com.gp.radioanalytics.department.analytics.service.DepartmentAnalyticsService;
 import com.gp.radioanalytics.device.analytics.service.DeviceAnalyticsService;
@@ -37,22 +37,22 @@ public class AnalyticsEngine {
 	private final AnalyticsMetrics analyticsMetrics;
 	private final Tracer analyticsTracer;
 
-	public AnalyticsExecutionResult executeAnalytics(AnalyticsExecutionMode mode, StructuredTaskScope<Object, ?> scope) throws InterruptedException {
+	public ExecutionResult executeAnalytics(ExecutionMode mode, StructuredTaskScope<Object, ?> scope) throws InterruptedException {
 		log.info("Starting analytics execution: mode={}", mode);
 		var startedAt = System.nanoTime();
 
 		var timedSubTasks = forkAll(scope);
 		scope.join();
 
-		var taskResults = getTaskResults(mode, timedSubTasks);
-		var analyticsStatus = getAnalyticsStatus(mode, taskResults);
+		var kpiResults = getKpiResults(mode, timedSubTasks);
+		var executionStatus = getExecutionStatus(mode, kpiResults);
 
 		var duration = Duration.ofNanos(System.nanoTime() - startedAt);
 
-		analyticsMetrics.recordAnalyticsExecution(mode, analyticsStatus, duration);
+		analyticsMetrics.recordAnalyticsExecution(mode, executionStatus, duration);
 
-		log.info("Analytics execution ended: mode={}, status={}, duration={}ms", mode, analyticsStatus, duration.toMillis());
-		return new AnalyticsExecutionResult(taskResults, analyticsStatus, Instant.now());
+		log.info("Analytics execution ended: mode={}, status={}, duration={}ms", mode, executionStatus, duration.toMillis());
+		return new ExecutionResult(kpiResults, executionStatus, Instant.now());
 	}
 
 	private TimedSubTasks forkAll(StructuredTaskScope<Object, ?> scope) {
@@ -119,107 +119,107 @@ public class AnalyticsEngine {
 		return new TimedSubTask<>(subTask, duration);
 	}
 
-	private TaskResults getTaskResults(AnalyticsExecutionMode mode, TimedSubTasks timedSubTasks) {
-		var deviceSummary = toTaskResult(mode, timedSubTasks.deviceSummaryTask(), AnalyticsRequirement.MANDATORY,
+	private KpiResults getKpiResults(ExecutionMode mode, TimedSubTasks timedSubTasks) {
+		var deviceSummary = toKpiResult(mode, timedSubTasks.deviceSummaryTask(), KpiRequirement.MANDATORY,
 			DEVICE_SUMMARY_KPI);
-		var devicesByOrganization = toTaskResult(mode, timedSubTasks.devicesByOrganizationTask(), AnalyticsRequirement.MANDATORY,
+		var devicesByOrganization = toKpiResult(mode, timedSubTasks.devicesByOrganizationTask(), KpiRequirement.MANDATORY,
 			DEVICES_BY_ORGANIZATION_KPI);
-		var devicesByDepartment = toTaskResult(mode, timedSubTasks.devicesByDepartmentTask(), AnalyticsRequirement.MANDATORY,
+		var devicesByDepartment = toKpiResult(mode, timedSubTasks.devicesByDepartmentTask(), KpiRequirement.MANDATORY,
 			DEVICES_BY_DEPARTMENT_KPI);
-		var devicesByType = toTaskResult(mode, timedSubTasks.devicesByTypeTask(), AnalyticsRequirement.MANDATORY,
+		var devicesByType = toKpiResult(mode, timedSubTasks.devicesByTypeTask(), KpiRequirement.MANDATORY,
 			DEVICES_BY_TYPE_KPI);
-		var devicesInstallationTrend = toTaskResult(mode, timedSubTasks.devicesInstallationTrendTask(), AnalyticsRequirement.MANDATORY,
+		var devicesInstallationTrend = toKpiResult(mode, timedSubTasks.devicesInstallationTrendTask(), KpiRequirement.MANDATORY,
 			DEVICES_INSTALLATION_TREND_KPI);
-		var averageDeviceAge = toTaskResult(mode, timedSubTasks.averageDeviceAgeTask(), AnalyticsRequirement.MANDATORY,
+		var averageDeviceAge = toKpiResult(mode, timedSubTasks.averageDeviceAgeTask(), KpiRequirement.MANDATORY,
 			AVERAGE_DEVICE_AGE_KPI);
-		var organizationSummary = toTaskResult(mode, timedSubTasks.organizationSummaryTask(), AnalyticsRequirement.OPTIONAL,
+		var organizationSummary = toKpiResult(mode, timedSubTasks.organizationSummaryTask(), KpiRequirement.OPTIONAL,
 			ORGANIZATION_SUMMARY_KPI);
-		var departmentSummary = toTaskResult(mode, timedSubTasks.departmentSummaryTask(), AnalyticsRequirement.OPTIONAL,
+		var departmentSummary = toKpiResult(mode, timedSubTasks.departmentSummaryTask(), KpiRequirement.OPTIONAL,
 			DEPARTMENT_SUMMARY_KPI);
-		var deviceTypeSummary = toTaskResult(mode, timedSubTasks.deviceTypeSummaryTask(), AnalyticsRequirement.OPTIONAL,
+		var deviceTypeSummary = toKpiResult(mode, timedSubTasks.deviceTypeSummaryTask(), KpiRequirement.OPTIONAL,
 			DEVICE_TYPE_SUMMARY_KPI);
-		var devicesDecommissioningTrend = toTaskResult(mode, timedSubTasks.devicesDecommissioningTrendTask(), AnalyticsRequirement.OPTIONAL,
+		var devicesDecommissioningTrend = toKpiResult(mode, timedSubTasks.devicesDecommissioningTrendTask(), KpiRequirement.OPTIONAL,
 			DEVICES_DECOMMISSIONING_TREND_KPI);
-		var deviceEventsTrend = toTaskResult(mode, timedSubTasks.deviceEventsTrendTask(), AnalyticsRequirement.OPTIONAL,
+		var deviceEventsTrend = toKpiResult(mode, timedSubTasks.deviceEventsTrendTask(), KpiRequirement.OPTIONAL,
 			DEVICE_EVENTS_TREND_KPI);
-		var organizationEventsTrend = toTaskResult(mode, timedSubTasks.organizationEventsTrendTask(), AnalyticsRequirement.OPTIONAL,
+		var organizationEventsTrend = toKpiResult(mode, timedSubTasks.organizationEventsTrendTask(), KpiRequirement.OPTIONAL,
 			ORGANIZATION_EVENTS_TREND_KPI);
-		var departmentEventsTrend = toTaskResult(mode, timedSubTasks.departmentEventsTrendTask(), AnalyticsRequirement.OPTIONAL,
+		var departmentEventsTrend = toKpiResult(mode, timedSubTasks.departmentEventsTrendTask(), KpiRequirement.OPTIONAL,
 			DEPARTMENT_EVENTS_TREND_KPI);
-		var deviceTypeEventsTrend = toTaskResult(mode, timedSubTasks.deviceTypeEventsTrendTask(), AnalyticsRequirement.OPTIONAL,
+		var deviceTypeEventsTrend = toKpiResult(mode, timedSubTasks.deviceTypeEventsTrendTask(), KpiRequirement.OPTIONAL,
 			DEVICE_TYPE_EVENTS_TREND_KPI);
 
-		return new TaskResults(
+		return new KpiResults(
 			deviceSummary, devicesByOrganization, devicesByDepartment, devicesByType, devicesInstallationTrend, averageDeviceAge, organizationSummary,
 			departmentSummary, deviceTypeSummary, devicesDecommissioningTrend, deviceEventsTrend, organizationEventsTrend, departmentEventsTrend,
 			deviceTypeEventsTrend
 		);
 	}
 
-	private <T> TaskResult<T> toTaskResult(AnalyticsExecutionMode mode, TimedSubTask<T> timedSubTask, AnalyticsRequirement requirement, String taskName) {
-		var taskResult = switch (timedSubTask.subTask().state()) {
+	private <T> KpiResult<T> toKpiResult(ExecutionMode mode, TimedSubTask<T> timedSubTask, KpiRequirement kpiRequirement, String kpiName) {
+		var kpiResult = switch (timedSubTask.subTask().state()) {
 			case SUCCESS ->
-				new TaskResult<>(
+				new KpiResult<>(
 					timedSubTask.subTask().get(),
-					AnalyticsTaskStatus.SUCCESS,
-					requirement
+					KpiStatus.SUCCESS,
+					kpiRequirement
 				);
 			case FAILED ->
-				new TaskResult<T>(
+				new KpiResult<T>(
 					null,
-					AnalyticsTaskStatus.FAILED,
-					requirement
+					KpiStatus.FAILED,
+					kpiRequirement
 				);
 			case UNAVAILABLE ->
-				new TaskResult<T>(
+				new KpiResult<T>(
 					null,
-					AnalyticsTaskStatus.TIMEOUT,
-					requirement
+					KpiStatus.TIMEOUT,
+					kpiRequirement
 				);
 		};
 
 		var duration = timedSubTask.duration().get();
 
 		if (duration >= 0)
-			analyticsMetrics.recordTaskExecution(mode, taskName, taskResult.status(), Duration.ofNanos(duration));
+			analyticsMetrics.recordKpiExecution(mode, kpiName, kpiResult.kpiStatus(), Duration.ofNanos(duration));
 
-		return taskResult;
+		return kpiResult;
 	}
 
-	private AnalyticsStatus getAnalyticsStatus(AnalyticsExecutionMode executionMode, TaskResults taskResults) {
-		var results = toList(taskResults);
+	private ExecutionStatus getExecutionStatus(ExecutionMode executionMode, KpiResults kpiResults) {
+		var kpiResultList = toKpiResultList(kpiResults);
 
-		var mandatoryFailed = results.stream()
-			.anyMatch(result ->
-				result.requirement() == AnalyticsRequirement.MANDATORY
-					&& result.status() != AnalyticsTaskStatus.SUCCESS
+		var mandatoryFailed = kpiResultList.stream()
+			.anyMatch(kpiResult ->
+				kpiResult.kpiRequirement() == KpiRequirement.MANDATORY
+					&& kpiResult.kpiStatus() != KpiStatus.SUCCESS
 			);
 
 		if (mandatoryFailed)
-			return AnalyticsStatus.FAILED;
+			return ExecutionStatus.FAILED;
 
-		var optionalFailed = results.stream()
-			.anyMatch(result ->
-				result.requirement() == AnalyticsRequirement.OPTIONAL
-					&& result.status() != AnalyticsTaskStatus.SUCCESS
+		var optionalFailed = kpiResultList.stream()
+			.anyMatch(kpiResult ->
+				kpiResult.kpiRequirement() == KpiRequirement.OPTIONAL
+					&& kpiResult.kpiStatus() != KpiStatus.SUCCESS
 			);
 
 		if (optionalFailed) {
-			if (executionMode == AnalyticsExecutionMode.REALTIME)
-				return AnalyticsStatus.PARTIAL;
-			else if (executionMode == AnalyticsExecutionMode.REPORT)
-				return AnalyticsStatus.FAILED;
+			if (executionMode == ExecutionMode.REALTIME)
+				return ExecutionStatus.PARTIAL;
+			else if (executionMode == ExecutionMode.REPORT)
+				return ExecutionStatus.FAILED;
 		}
 
-		return AnalyticsStatus.COMPLETED;
+		return ExecutionStatus.COMPLETED;
 	}
 
-	private List<TaskResult<?>> toList(TaskResults taskResults) {
+	private List<KpiResult<?>> toKpiResultList(KpiResults kpiResults) {
 		return List.of(
-			taskResults.deviceSummary(), taskResults.devicesByOrganization(), taskResults.devicesByDepartment(), taskResults.devicesByType(),
-			taskResults.devicesInstallationTrend(), taskResults.averageDeviceAge(), taskResults.organizationSummary(), taskResults.departmentSummary(),
-			taskResults.deviceTypeSummary(), taskResults.devicesDecommissioningTrend(), taskResults.deviceEventsTrend(), taskResults.organizationEventsTrend(),
-			taskResults.departmentEventsTrend(), taskResults.deviceTypeEventsTrend()
+			kpiResults.deviceSummary(), kpiResults.devicesByOrganization(), kpiResults.devicesByDepartment(), kpiResults.devicesByType(),
+			kpiResults.devicesInstallationTrend(), kpiResults.averageDeviceAge(), kpiResults.organizationSummary(), kpiResults.departmentSummary(),
+			kpiResults.deviceTypeSummary(), kpiResults.devicesDecommissioningTrend(), kpiResults.deviceEventsTrend(), kpiResults.organizationEventsTrend(),
+			kpiResults.departmentEventsTrend(), kpiResults.deviceTypeEventsTrend()
 		);
 	}
 }

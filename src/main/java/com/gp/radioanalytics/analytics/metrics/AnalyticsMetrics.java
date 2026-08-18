@@ -1,8 +1,8 @@
 package com.gp.radioanalytics.analytics.metrics;
 
-import com.gp.radioanalytics.analytics.enums.AnalyticsExecutionMode;
-import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
-import com.gp.radioanalytics.analytics.enums.AnalyticsTaskStatus;
+import com.gp.radioanalytics.analytics.enums.ExecutionMode;
+import com.gp.radioanalytics.analytics.enums.ExecutionStatus;
+import com.gp.radioanalytics.analytics.enums.KpiStatus;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,15 +14,15 @@ import java.time.Duration;
 public class AnalyticsMetrics {
 	private final MeterRegistry meterRegistry;
 
-	public void recordTaskExecution(AnalyticsExecutionMode mode, String taskName, AnalyticsTaskStatus status, Duration duration) {
+	public void recordKpiExecution(ExecutionMode mode, String kpiName, KpiStatus kpiStatus, Duration duration) {
 		meterRegistry
-			.timer("analytics.kpi.duration", "mode", mode.name(), "kpi", taskName, "status", status.name())
+			.timer("analytics.kpi.duration", "mode", mode.name(), "kpi", kpiName, "status", kpiStatus.name())
 			.record(duration);
 	}
 
-	public void recordAnalyticsExecution(AnalyticsExecutionMode mode, AnalyticsStatus status, Duration duration) {
+	public void recordAnalyticsExecution(ExecutionMode mode, ExecutionStatus executionStatus, Duration duration) {
 		meterRegistry
-			.counter("analytics.execution.count", "mode", mode.name(), "status", status.name())
+			.counter("analytics.execution.count", "mode", mode.name(), "status", executionStatus.name())
 			.increment();
 		meterRegistry
 			.timer("analytics.execution.duration", "mode", mode.name())

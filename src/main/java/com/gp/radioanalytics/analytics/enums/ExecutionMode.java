@@ -1,6 +1,6 @@
 package com.gp.radioanalytics.analytics.enums;
 
-public enum AnalyticsExecutionMode {
+public enum ExecutionMode {
 	REALTIME,
 	REPORT
 }

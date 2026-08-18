@@ -1,8 +1,8 @@
 package com.gp.radioanalytics.analytics.realtime;
 
-import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
+import com.gp.radioanalytics.analytics.dto.Response;
 import com.gp.radioanalytics.analytics.engine.AnalyticsEngine;
-import com.gp.radioanalytics.analytics.enums.AnalyticsExecutionMode;
+import com.gp.radioanalytics.analytics.enums.ExecutionMode;
 import com.gp.radioanalytics.analytics.exception.AnalyticsExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +22,12 @@ public class AnalyticsRealTime {
 	@Value("${analytics.realtime.deadline.seconds}")
 	private int deadlineInSeconds;
 
-	public AnalyticsResponse getRealTimeAnalytics() {
+	public Response getRealTimeAnalytics() {
 		try (var scope = StructuredTaskScope.open(Joiner.allUntil(_ -> false),
 										config -> config.withTimeout(Duration.ofSeconds(deadlineInSeconds)))) {
-			var analyticsExecutionResult = analyticsEngine.executeAnalytics(AnalyticsExecutionMode.REALTIME, scope);
+			var executionResult = analyticsEngine.executeAnalytics(ExecutionMode.REALTIME, scope);
 
-			return new AnalyticsResponse(analyticsExecutionResult.taskResults(), analyticsExecutionResult.analyticsStatus(),
-				analyticsExecutionResult.generatedAt());
+			return new Response(executionResult.kpiResults(), executionResult.executionStatus(), executionResult.generatedAt());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new AnalyticsExecutionException("Analytics execution was interrupted", e);

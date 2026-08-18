@@ -1,8 +1,8 @@
 package com.gp.radioanalytics.analytics.report.analyticsreport.service;
 
-import com.gp.radioanalytics.analytics.dto.AnalyticsResponse;
-import com.gp.radioanalytics.analytics.dto.TaskResults;
-import com.gp.radioanalytics.analytics.enums.AnalyticsStatus;
+import com.gp.radioanalytics.analytics.dto.Response;
+import com.gp.radioanalytics.analytics.dto.KpiResults;
+import com.gp.radioanalytics.analytics.enums.ExecutionStatus;
 import com.gp.radioanalytics.analytics.report.analyticsreport.domain.AnalyticsReport;
 import com.gp.radioanalytics.analytics.report.analyticsreport.repository.AnalyticsReportRepository;
 import com.gp.radioanalytics.analytics.report.exception.ReportNotAvailableException;
@@ -21,22 +21,22 @@ public class AnalyticsReportService {
 	private final AnalyticsReportRepository analyticsReportRepository;
 
 	@Transactional
-	public void saveReport(TaskResults results, AnalyticsStatus status, Instant generatedAt) {
-			String json = jsonMapper.writeValueAsString(results);
+	public void saveReport(KpiResults kpiResults, ExecutionStatus executionStatus, Instant generatedAt) {
+			String json = jsonMapper.writeValueAsString(kpiResults);
 			var report = AnalyticsReport.builder()
 				.report(json)
-				.reportStatus(status)
+				.reportExecutionStatus(executionStatus)
 				.generatedAt(generatedAt.atOffset(ZoneOffset.UTC))
 				.build();
 			analyticsReportRepository.save(report);
 	}
 
-	public AnalyticsResponse getLatestAnalyticsReport() {
+	public Response getLatestAnalyticsReport() {
 		var report = analyticsReportRepository.findFirstByOrderByGeneratedAtDesc()
 			.orElseThrow(() -> new ReportNotAvailableException("No analytics report available"));
 
-		var taskResults = jsonMapper.readValue(report.getReport(), TaskResults.class);
+		var kpiResults = jsonMapper.readValue(report.getReport(), KpiResults.class);
 
-		return new AnalyticsResponse(taskResults, report.getReportStatus(), report.getGeneratedAt().toInstant());
+		return new Response(kpiResults, report.getReportExecutionStatus(), report.getGeneratedAt().toInstant());
 	}
 }
