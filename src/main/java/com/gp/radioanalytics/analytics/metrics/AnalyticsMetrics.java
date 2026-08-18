@@ -14,9 +14,9 @@ import java.time.Duration;
 public class AnalyticsMetrics {
 	private final MeterRegistry meterRegistry;
 
-	public void recordTaskExecution(String taskName, AnalyticsTaskStatus status, Duration duration) {
+	public void recordTaskExecution(AnalyticsExecutionMode mode, String taskName, AnalyticsTaskStatus status, Duration duration) {
 		meterRegistry
-			.timer("analytics.kpi.duration", "kpi", taskName, "status", status.name())
+			.timer("analytics.kpi.duration", "mode", mode.name(), "kpi", taskName, "status", status.name())
 			.record(duration);
 	}
 

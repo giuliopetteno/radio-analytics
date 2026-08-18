@@ -26,7 +26,7 @@ public class AnalyticsReport {
 	public void generateAnalyticsReport() {
 		try (var scope = StructuredTaskScope.open(StructuredTaskScope.Joiner.allUntil(_ -> false),
 			config -> config.withTimeout(Duration.ofMinutes(deadlineInMinutes)))) {
-			var analyticsExecutionResult = analyticsEngine.executeAnalytics(scope, AnalyticsExecutionMode.REPORT);
+			var analyticsExecutionResult = analyticsEngine.executeAnalytics(AnalyticsExecutionMode.REPORT, scope);
 
 			if (analyticsExecutionResult.analyticsStatus() == AnalyticsStatus.FAILED) {
 				log.error("Report generation failed, some KPIs unavailable — skipping persistence");

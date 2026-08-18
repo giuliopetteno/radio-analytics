@@ -25,7 +25,7 @@ public class AnalyticsRealTime {
 	public AnalyticsResponse getRealTimeAnalytics() {
 		try (var scope = StructuredTaskScope.open(Joiner.allUntil(_ -> false),
 										config -> config.withTimeout(Duration.ofSeconds(deadlineInSeconds)))) {
-			var analyticsExecutionResult = analyticsEngine.executeAnalytics(scope, AnalyticsExecutionMode.REALTIME);
+			var analyticsExecutionResult = analyticsEngine.executeAnalytics(AnalyticsExecutionMode.REALTIME, scope);
 
 			return new AnalyticsResponse(analyticsExecutionResult.taskResults(), analyticsExecutionResult.analyticsStatus(),
 				analyticsExecutionResult.generatedAt());
