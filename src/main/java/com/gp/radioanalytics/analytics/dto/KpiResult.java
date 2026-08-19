@@ -4,7 +4,7 @@ import com.gp.radioanalytics.analytics.enums.KpiRequirement;
 import com.gp.radioanalytics.analytics.enums.KpiStatus;
 
 public record KpiResult<T>(
-	T kpi,
-	KpiStatus kpiStatus,
-	KpiRequirement kpiRequirement
+	T result,
+	KpiStatus status,
+	KpiRequirement requirement
 ) {}

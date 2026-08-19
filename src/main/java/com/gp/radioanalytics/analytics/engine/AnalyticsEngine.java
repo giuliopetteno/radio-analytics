@@ -181,7 +181,7 @@ public class AnalyticsEngine {
 		var duration = timedSubTask.duration().get();
 
 		if (duration >= 0)
-			analyticsMetrics.recordKpiExecution(mode, kpiName, kpiResult.kpiStatus(), Duration.ofNanos(duration));
+			analyticsMetrics.recordKpiExecution(mode, kpiName, kpiResult.status(), Duration.ofNanos(duration));
 
 		return kpiResult;
 	}
@@ -191,8 +191,8 @@ public class AnalyticsEngine {
 
 		var mandatoryFailed = kpiResultList.stream()
 			.anyMatch(kpiResult ->
-				kpiResult.kpiRequirement() == KpiRequirement.MANDATORY
-					&& kpiResult.kpiStatus() != KpiStatus.SUCCESS
+				kpiResult.requirement() == KpiRequirement.MANDATORY
+					&& kpiResult.status() != KpiStatus.SUCCESS
 			);
 
 		if (mandatoryFailed)
@@ -200,8 +200,8 @@ public class AnalyticsEngine {
 
 		var optionalFailed = kpiResultList.stream()
 			.anyMatch(kpiResult ->
-				kpiResult.kpiRequirement() == KpiRequirement.OPTIONAL
-					&& kpiResult.kpiStatus() != KpiStatus.SUCCESS
+				kpiResult.requirement() == KpiRequirement.OPTIONAL
+					&& kpiResult.status() != KpiStatus.SUCCESS
 			);
 
 		if (optionalFailed) {
