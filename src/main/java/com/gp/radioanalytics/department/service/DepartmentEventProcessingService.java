@@ -30,12 +30,18 @@ public class DepartmentEventProcessingService {
 
 		departmentEventLogRepository.save(toEventLog(event));
 
-		DepartmentSnapshot departmentSnapshot = toSnapshot(event);
-		if (event.eventType() == EventType.DELETE) {
-			departmentSnapshot.setDeleted(true);
-			departmentSnapshot.setDeletedAt(event.producedAt());
+		var isNewerThanSnapshot = departmentSnapshotRepository.findById(event.departmentId())
+			.map(snapshot -> event.producedAt().isAfter(snapshot.getLastEventProducedAt()))
+			.orElse(true);
+
+		if(isNewerThanSnapshot) {
+			DepartmentSnapshot departmentSnapshot = toSnapshot(event);
+			if (event.eventType() == EventType.DELETE) {
+				departmentSnapshot.setDeleted(true);
+				departmentSnapshot.setDeletedAt(event.producedAt());
+			}
+			departmentSnapshotRepository.save(departmentSnapshot);
 		}
-		departmentSnapshotRepository.save(departmentSnapshot);
 
 		processedEventService.markAsProcessed(event.eventId(), EntityType.DEPARTMENT.name());
 		log.info("Event {} processed successfully", event.eventId());
@@ -69,6 +75,7 @@ public class DepartmentEventProcessingService {
 			.departmentUpdatedAt(event.updatedAt())
 			.lastEventId(event.eventId())
 			.lastEventType(event.eventType().name())
+			.lastEventProducedAt(event.producedAt())
 			.build();
 	}
 }

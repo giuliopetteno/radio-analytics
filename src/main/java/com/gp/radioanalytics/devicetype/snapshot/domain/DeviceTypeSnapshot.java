@@ -45,6 +45,9 @@ public class DeviceTypeSnapshot {
 	@Column(name = "last_event_type", nullable = false)
 	private String lastEventType;
 
+	@Column(name = "last_event_produced_at", nullable = false)
+	private OffsetDateTime lastEventProducedAt;
+
 	@UpdateTimestamp
 	@Column(name = "updated_at", nullable = false)
 	private OffsetDateTime updatedAt;

@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS radio_analytics.organization_snapshot(
     deleted_at TIMESTAMP WITH TIME ZONE,
     last_event_id UUID NOT NULL,
     last_event_type TEXT NOT NULL,
+    last_event_produced_at TIMESTAMP WITH TIME ZONE NOT NULL
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS radio_analytics.department_snapshot(
     deleted_at TIMESTAMP WITH TIME ZONE,
     last_event_id UUID NOT NULL,
     last_event_type TEXT NOT NULL,
+    last_event_produced_at TIMESTAMP WITH TIME ZONE NOT NULL
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -87,6 +89,7 @@ CREATE TABLE IF NOT EXISTS radio_analytics.device_type_snapshot(
     deleted_at TIMESTAMP WITH TIME ZONE,
     last_event_id UUID NOT NULL,
     last_event_type TEXT NOT NULL,
+    last_event_produced_at TIMESTAMP WITH TIME ZONE NOT NULL
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
@@ -129,5 +132,6 @@ CREATE TABLE IF NOT EXISTS radio_analytics.device_snapshot(
     deleted_at TIMESTAMP WITH TIME ZONE,
     last_event_id UUID NOT NULL,
     last_event_type TEXT NOT NULL,
+    last_event_produced_at TIMESTAMP WITH TIME ZONE NOT NULL
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );

@@ -30,12 +30,18 @@ public class OrganizationEventProcessingService {
 
 		organizationEventLogRepository.save(toEventLog(event));
 
-		OrganizationSnapshot organizationSnapshot = toSnapshot(event);
-		if (event.eventType() == EventType.DELETE) {
-			organizationSnapshot.setDeleted(true);
-			organizationSnapshot.setDeletedAt(event.producedAt());
+		var isNewerThanSnapshot = organizationSnapshotRepository.findById(event.organizationId())
+			.map(snapshot -> event.producedAt().isAfter(snapshot.getLastEventProducedAt()))
+			.orElse(true);
+
+		if(isNewerThanSnapshot) {
+			OrganizationSnapshot organizationSnapshot = toSnapshot(event);
+			if (event.eventType() == EventType.DELETE) {
+				organizationSnapshot.setDeleted(true);
+				organizationSnapshot.setDeletedAt(event.producedAt());
+			}
+			organizationSnapshotRepository.save(organizationSnapshot);
 		}
-		organizationSnapshotRepository.save(organizationSnapshot);
 
 		processedEventService.markAsProcessed(event.eventId(), EntityType.ORGANIZATION.name());
 		log.info("Event {} processed successfully", event.eventId());
@@ -65,6 +71,7 @@ public class OrganizationEventProcessingService {
 			.organizationUpdatedAt(event.updatedAt())
 			.lastEventId(event.eventId())
 			.lastEventType(event.eventType().name())
+			.lastEventProducedAt(event.producedAt())
 			.build();
 	}
 }

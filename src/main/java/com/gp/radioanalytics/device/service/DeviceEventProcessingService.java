@@ -30,12 +30,18 @@ public class DeviceEventProcessingService {
 
 		deviceEventLogRepository.save(toEventLog(event));
 
-		DeviceSnapshot deviceSnapshot = toSnapshot(event);
-		if (event.eventType() == EventType.DELETE) {
-			deviceSnapshot.setDeleted(true);
-			deviceSnapshot.setDeletedAt(event.producedAt());
+		var isNewerThanSnapshot = deviceSnapshotRepository.findById(event.deviceId())
+			.map(snapshot -> event.producedAt().isAfter(snapshot.getLastEventProducedAt()))
+			.orElse(true);
+
+		if(isNewerThanSnapshot) {
+			DeviceSnapshot deviceSnapshot = toSnapshot(event);
+			if (event.eventType() == EventType.DELETE) {
+				deviceSnapshot.setDeleted(true);
+				deviceSnapshot.setDeletedAt(event.producedAt());
+			}
+			deviceSnapshotRepository.save(deviceSnapshot);
 		}
-		deviceSnapshotRepository.save(deviceSnapshot);
 
 		processedEventService.markAsProcessed(event.eventId(), EntityType.DEVICE.name());
 		log.info("Event {} processed successfully", event.eventId());
@@ -77,6 +83,7 @@ public class DeviceEventProcessingService {
 			.deviceUpdatedAt(event.updatedAt())
 			.lastEventId(event.eventId())
 			.lastEventType(event.eventType().name())
+			.lastEventProducedAt(event.producedAt())
 			.build();
 	}
 }

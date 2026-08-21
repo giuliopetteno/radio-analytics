@@ -20,7 +20,7 @@ The microservice exposes REST endpoints for analytics consumption, accessible on
 - Read-model persistence for real-time analytics and scheduled reporting across medical devices, organizational structure, lifecycle trends, and event activity
 - RESTful APIs with layered architecture
 - Exception handling
-- Idempotent, event-driven architecture with deduplication and dead-letter handling
+- Event-driven architecture, resilient to duplicates, reordering, and processing failures
 - Containerization
 - Automated CI/CD pipeline
 - Cloud deployment
@@ -33,7 +33,7 @@ The microservice exposes REST endpoints for analytics consumption, accessible on
 - Spring Boot 4
 - Hibernate / JPA
 - PostgreSQL
-- Apache Kafka for event-driven communication, with idempotent consumer and dead-letter handling
+- Apache Kafka for event-driven communication, with idempotent consumer, deduplication, out of order event handling, and dead-letter processing
 - Virtual Threads and Structured Concurrency for parallel task execution, deadlines, cancellation and partial degradation
 - Environment-based configuration for default and production profiles
 - Spring Boot Actuator for health, info and metrics endpoints, enabling production monitoring
